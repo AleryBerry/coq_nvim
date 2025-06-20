@@ -1,10 +1,14 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import AbstractSet, Literal, Mapping, Optional, Tuple, Union
+from typing import Callable, Any, AbstractSet, Literal, Mapping, Optional, Tuple, Union
 
 from pynvim_pp.float_win import Border
 
+
+class LuaFunction:
+    """Placeholder for Lua functions in settings"""
+    pass
 
 @dataclass(frozen=True)
 class Limits:
@@ -293,7 +297,7 @@ class Settings:
     completion: CompleteOptions
     keymap: KeyMapping
     clients: Clients
-
+    custom_format: Optional[Union[LuaFunction, callable]] = None
 
 EMPTY_MATCH = MatchOptions(
     max_results=0,

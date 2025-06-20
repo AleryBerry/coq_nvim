@@ -3,6 +3,9 @@ from pathlib import Path, PurePath
 from shutil import which
 from typing import Any, Iterator, Mapping, cast
 
+import inspect
+from types import FunctionType
+
 from pynvim_pp.lib import decode
 from pynvim_pp.nvim import Nvim
 from pynvim_pp.types import NoneType
@@ -36,6 +39,20 @@ from .state import state
 async def _settings() -> Settings:
     yml = safe_load(decode(CONFIG_YML.read_bytes()))
     user_config = cast(Any, (await Nvim.vars.get(NoneType, SETTINGS_VAR)) or {})
+    def process_lua_functions(config):
+        if isinstance(config, dict):
+            return {
+                k: process_lua_functions(v)
+                for k, v in config.items()
+            }
+        elif isinstance(config, list):
+            return [process_lua_functions(v) for v in config]
+        elif inspect.isfunction(config) and hasattr(config, '_lua_origin'):
+            return LuaFunction()  # Replace with placeholder
+        else:
+            return config
+    
+    user_config = process_lua_functions(user_config)
     u_conf = hydrate(user_config)
 
     if isinstance(u_conf, Mapping):

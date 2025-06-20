@@ -256,3 +256,5 @@ weights:
   recency: 1.0
 
 xdg: false
+
+custom_format: null
