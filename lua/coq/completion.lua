@@ -37,7 +37,7 @@ end
               local formatted_items = {}
               if custom_format then
                 for _, item in ipairs(items) do
-                  item.abbr = custom_format(item)
+                  item = custom_format(item)
                 end
               end
               items = formatted_items
